@@ -530,6 +530,25 @@ class JsonMapper
                 }
             }
         }
+        if ($rprop === null) {
+            //key map property matching
+            //case-insensitive property matching
+            foreach ($rc->getProperties() as $p) {
+                $docblock    = $p->getDocComment();
+                $annotations = static::parseAnnotations($docblock);
+                //support "@var type description"
+                if (isset($annotations['keyMap'][0])){
+                    list($keyMap) = explode(' ', $annotations['keyMap'][0]);
+                    if (strcmp($name,$keyMap) === 0){
+                        $rprop = $p;
+                        break;
+                    }
+                }else{
+                    continue;
+                }
+            }
+
+        }
         if ($rprop !== null) {
             if ($rprop->isPublic() || $this->bIgnoreVisibility) {
                 $docblock    = $rprop->getDocComment();
